@@ -1,5 +1,6 @@
 package nightmare.droid.love;
 
+import nightmare.droid.love.views.GameScreen;
 import android.app.Activity;
 import android.os.Bundle;
 
@@ -8,6 +9,7 @@ public class DroidLoveActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
+        GameScreen gameScreen = new GameScreen(this);        		
+        setContentView(gameScreen);     
     }
 }
