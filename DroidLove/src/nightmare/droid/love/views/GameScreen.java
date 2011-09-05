@@ -1,39 +1,48 @@
 package nightmare.droid.love.views;
 
+import nightmare.droid.love.core.GameObject;
 import nightmare.droid.love.core.GameThread;
+import nightmare.droid.love.core.GameWorld;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.PorterDuff.Mode;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-public class GameScreen extends SurfaceView implements SurfaceHolder.Callback{
+public class GameScreen implements SurfaceHolder.Callback{
 	private GameThread gameThread;
-	private int x = 100;
-	public GameScreen(Context context) {
-		super(context);
-		this.getHolder().addCallback(this);
-		this.gameThread = new GameThread(this,this.getHolder());
+	private GameWorld gameWorld;
+	private SurfaceView surfaceView;
+	
+	public GameScreen(Context context, GameWorld world) {
+		surfaceView = new SurfaceView(context);
+		surfaceView.getHolder().addCallback(this);
+		this.gameThread = new GameThread(this,surfaceView.getHolder());
+		this.gameWorld = world;
+	}
+	
+	public GameWorld getGameWorld() {
+		return gameWorld;
 	}
 
 	public void surfaceChanged(SurfaceHolder holder, int format, int width,
 			int height) {
-
+	}
+	
+	public SurfaceView getSurfaceView() {
+		return surfaceView;
 	}
 
-	@Override
-	public void draw(Canvas canvas) {
-		Paint txtpaint = new Paint();
-		txtpaint.setColor(Color.CYAN);
-		txtpaint.setStyle(Paint.Style.FILL);
-		canvas.drawColor(Color.WHITE, Mode.CLEAR);
-		canvas.drawText("Hello Droid !", x, 100,txtpaint);
-		x++;
-		if (x>300) x=0;
-	}
+	public void draw(Canvas canvas, float interpolation) {
+		canvas.drawColor(Color.WHITE, Mode.SCREEN);
+		
+		for(GameObject obj: gameWorld.getGameObjects()){
+			obj.draw(canvas,interpolation);
+		}
 
+	}
+	
 	public void surfaceCreated(SurfaceHolder holder) {
 		gameThread.setRunning(true);
 		gameThread.start();
@@ -48,5 +57,5 @@ public class GameScreen extends SurfaceView implements SurfaceHolder.Callback{
 	            retry = false;
 	        } catch (InterruptedException e) {}
 	    }
-	}		
+	}
 }
