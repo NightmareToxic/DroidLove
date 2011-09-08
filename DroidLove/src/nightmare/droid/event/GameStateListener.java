@@ -1,4 +1,4 @@
-package nightmare.droid.love.event;
+package nightmare.droid.event;
 
 public interface GameStateListener{
 	void onGameStateChanged(GameStateEvent e);	
