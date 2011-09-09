@@ -115,7 +115,7 @@ public class GameCore{
 			}
 		}
 		
-		currentScene.init(scene, engine, assets);
+		currentScene.init(scene, engine, assets,this);
 		currentScene.createScene();
 	}
 }

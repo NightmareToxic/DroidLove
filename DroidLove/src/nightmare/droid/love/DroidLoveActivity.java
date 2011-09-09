@@ -47,7 +47,6 @@ public class DroidLoveActivity extends BaseGameActivity {
 		});
 		
 		gameCore.setGameState("OPENING");
-     	
 		return scene;
 	}
 
