@@ -1,54 +1,70 @@
 package nightmare.droid.love.views;
 
+import javax.microedition.khronos.opengles.GL10;
+
 import nightmare.droid.core.GameCore;
-import nightmare.droid.objects.FadingText;
 
 import org.anddev.andengine.engine.Engine;
 import org.anddev.andengine.engine.handler.IUpdateHandler;
+import org.anddev.andengine.entity.modifier.DelayModifier;
+import org.anddev.andengine.entity.modifier.FadeInModifier;
+import org.anddev.andengine.entity.modifier.FadeOutModifier;
+import org.anddev.andengine.entity.modifier.SequenceEntityModifier;
 import org.anddev.andengine.entity.scene.Scene;
 import org.anddev.andengine.entity.scene.background.ColorBackground;
-import org.anddev.andengine.opengl.font.Font;
-import org.anddev.andengine.opengl.texture.TextureOptions;
-import org.anddev.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
+import org.anddev.andengine.entity.sprite.Sprite;
+import org.anddev.andengine.opengl.texture.ITexture;
+import org.anddev.andengine.opengl.texture.region.TextureRegion;
 
-import android.graphics.Color;
-import android.graphics.Typeface;
+public class Opening extends GameScreen {
 
-public class Opening extends GameScreen{
 
-	private final BitmapTextureAtlas pTex =  new BitmapTextureAtlas(512, 512, TextureOptions.BILINEAR);
-	
 	@Override
 	public void createScene() {
 		final Scene scene = this.getScene();
 		final Engine engine = this.getEngine();
 		final GameCore core = this.getCore();
-		
-		scene.setBackground(new ColorBackground(0,.55f,1));
-		
-		final Typeface face = Typeface.create(Typeface.DEFAULT,Typeface.BOLD);
-		final Font pFont = new Font(pTex, face, 32, true, Color.WHITE);
+				
+		//Black background
+		scene.setBackground(new ColorBackground(0,0,0));
 
-		engine.getTextureManager().loadTexture(pTex);
-		engine.getFontManager().loadFont(pFont);
-		
-		scene.registerUpdateHandler(new IUpdateHandler(){
+		scene.registerUpdateHandler(new IUpdateHandler() {
 			public void onUpdate(float pSecondsElapsed) {
-				sceneElapsedTime.setValue(sceneElapsedTime.getValue()+pSecondsElapsed);		
-				
-				int st = sceneState.getValue(); 
-				
-				switch(st){
-				case 0:					
-					String pText = "Hello Droid";	
-					float halfScreenWidth = engine.getCamera().getWidth()/2-pFont.getStringWidth(pText)/2;
-					float halfScreenHeight = engine.getCamera().getHeight()/2-pFont.getLineHeight()/2;
-					FadingText txt = new FadingText(halfScreenWidth, halfScreenHeight, pFont, pText);
-					scene.attachChild(txt.getEntity());
+				sceneElapsedTime.setValue(sceneElapsedTime.getValue()
+						+ pSecondsElapsed);
+
+				int st = sceneState.getValue();
+
+				switch (st) {
+				case 0:				
+					TextureRegion logo = LoadBmpToEngine(512,256, "img/NightmareToxic.png", 0, 0);
+					final TextureRegion upper_bg = LoadBmpToEngine(512,512,"img/fundo_upper.png",0,0);
+					final TextureRegion lower_bg = LoadBmpToEngine(512,512,"img/fundo_lower.png",0,0);
+					
+					float halfScreenWidth = engine.getCamera().getWidth() / 2
+							- logo.getWidth() / 2;
+					float halfScreenHeight = engine.getCamera().getHeight() / 2
+							- logo.getHeight() / 2;
+
+					Sprite spr = new Sprite(halfScreenWidth,halfScreenHeight,logo);
+					spr.setBlendFunction(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
+					spr.setColor(1,1,1,0);
+					
+					spr.registerEntityModifier(new SequenceEntityModifier(
+							new DelayModifier(2.0f),
+							new FadeInModifier(2.0f),
+							new DelayModifier(3.0f),
+							new FadeOutModifier(1.0f)));
+					 
+					scene.attachChild(spr);
+					scene.attachChild(new Sprite(0f,0f,upper_bg));
+					scene.attachChild(new Sprite(0f,engine.getCamera().getHeight() - lower_bg.getHeight(),lower_bg));
+					
 					sceneState.setValue(1);
 					break;
+
 				case 1:
-					if (sceneElapsedTime.getValue()>8.0f){
+					if (sceneElapsedTime.getValue() > 8.5f) {
 						scene.unregisterUpdateHandler(this);
 						core.setGameState("MAINMENU");
 						sceneState.setValue(2);
@@ -59,15 +75,28 @@ public class Opening extends GameScreen{
 					break;
 				}
 			}
+
 			public void reset() {
 			}
 		});
-		
+
 	}
-	
-	public void destroyScene(){
+
+	public void destroyScene() {
 		final Engine engine = this.getEngine();
-		engine.getTextureManager().unloadTexture(pTex);
+		final Scene scene = this.getScene();
+		
+		//Remove Objects
+		scene.detachChildren();
+
+		//Clear Handlers
+		scene.clearUpdateHandlers();
+		scene.clearEntityModifiers();
+		
+		//Unload Textures and Fonts
+		for (ITexture tex : loadedTextures){
+			engine.getTextureManager().unloadTexture(tex);	
+		}		
 		engine.getFontManager().clear();
 	}
 }

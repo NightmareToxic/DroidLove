@@ -12,7 +12,7 @@ import org.anddev.andengine.engine.Engine;
 import org.anddev.andengine.engine.handler.IUpdateHandler;
 import org.anddev.andengine.entity.scene.Scene;
 
-import android.content.res.AssetManager;
+import android.content.Context;
 
 public class GameCore{
 
@@ -66,14 +66,14 @@ public class GameCore{
 		}
 	}
 	
-	public void setGameSequence(final Scene scene, final Engine engine, final AssetManager assets, GameScreen... screens) throws InvalidGameStateException {
+	public void setGameSequence(final Scene scene, final Engine engine,final Context context, GameScreen... screens) throws InvalidGameStateException {
 		for (GameScreen scr : screens){
 			scenes.add(scr);
 		}
 				
 		//Init
 		currentScene = scenes.get(currentSceneIndex);
-		loadCurrentScene(scene,engine,assets);	
+		loadCurrentScene(scene,engine,context);	
 		
 		if (screenHandler!=null){
 			engine.unregisterUpdateHandler(screenHandler);
@@ -87,7 +87,7 @@ public class GameCore{
 						}
 						currentScene = scenes.get(currentSceneIndex);
 						try {
-							loadCurrentScene(scene,engine,assets);
+							loadCurrentScene(scene,engine,context);
 						} catch (InvalidGameStateException e) {
 							e.printStackTrace();
 						}	
@@ -102,7 +102,7 @@ public class GameCore{
 		sequenceMode=true;
 	}
 
-	public void loadCurrentScene(Scene scene,Engine engine, AssetManager assets) throws InvalidGameStateException{	
+	public void loadCurrentScene(Scene scene,Engine engine, Context context) throws InvalidGameStateException{	
 		if (currentScene!=null){
 			currentScene.destroyScene();
 		}
@@ -115,7 +115,7 @@ public class GameCore{
 			}
 		}
 		
-		currentScene.init(scene, engine, assets,this);
+		currentScene.init(scene, engine,context,this);
 		currentScene.createScene();
 	}
 }

@@ -39,7 +39,7 @@ public class DroidLoveActivity extends BaseGameActivity {
 		gameCore.addGameStateListener(new GameStateListener(){
 			public void onGameStateChanged(GameStateEvent e) {
 				try{
-					gameCore.loadCurrentScene(scene,getEngine(), getAssets());
+					gameCore.loadCurrentScene(scene,getEngine(),getApplicationContext());
 				}catch(InvalidGameStateException ex){
 					ex.printStackTrace();
 				}
