@@ -96,7 +96,7 @@ public class Opening extends GameScreen {
 		//Unload Textures and Fonts
 		for (ITexture tex : loadedTextures){
 			engine.getTextureManager().unloadTexture(tex);	
-		}		
+		}
 		engine.getFontManager().clear();
 	}
 }
